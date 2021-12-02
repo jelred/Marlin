@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #pragma once
@@ -25,32 +25,16 @@
  * power.h - power control
  */
 
-#if ENABLED(AUTO_POWER_CONTROL)
-  #include "../core/millis_t.h"
-#endif
+#include "../core/millis_t.h"
 
 class Power {
   public:
-    static bool psu_on;
-
-    static void init();
+    static void check();
     static void power_on();
     static void power_off();
-
-  #if ENABLED(AUTO_POWER_CONTROL) && POWER_OFF_DELAY > 0
-    static void power_off_soon();
-  #else
-    static inline void power_off_soon() { power_off(); }
-  #endif
-
-  #if ENABLED(AUTO_POWER_CONTROL)
-    static void check(const bool pause);
-
-    private:
-      static millis_t lastPowerOn;
-      static bool is_power_needed();
-
-  #endif
+  private:
+    static millis_t lastPowerOn;
+    static bool is_power_needed();
 };
 
 extern Power powerManager;

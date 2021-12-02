@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #pragma once
@@ -27,14 +27,19 @@
 
 #define BOARD_INFO_NAME "Melzi (Tronxy)"
 
-// Alter timing for graphical display
-#if ENABLED(U8GLIB_ST7920)
-  #define BOARD_ST7920_DELAY_1                 0
-  #define BOARD_ST7920_DELAY_2               125
-  #define BOARD_ST7920_DELAY_3                 0
+#if HAS_GRAPHICAL_LCD
+  #ifndef BOARD_ST7920_DELAY_1
+    #define BOARD_ST7920_DELAY_1 DELAY_NS(0)
+  #endif
+  #ifndef BOARD_ST7920_DELAY_2
+    #define BOARD_ST7920_DELAY_2 DELAY_NS(125)
+  #endif
+  #ifndef BOARD_ST7920_DELAY_3
+    #define BOARD_ST7920_DELAY_3 DELAY_NS(0)
+  #endif
 #endif
 
-#include "pins_MELZI.h" // ... SANGUINOLOLU_12 ... SANGUINOLOLU_11
+#include "pins_MELZI.h"
 
 #undef Z_ENABLE_PIN
 #undef LCD_PINS_RS

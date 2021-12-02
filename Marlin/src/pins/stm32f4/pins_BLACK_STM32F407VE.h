@@ -16,21 +16,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #pragma once
 
 /**
  * STM32F407VET6 with RAMPS-like shield
- * 'Black' STM32F407VET6 board - https://www.stm32duino.com/viewtopic.php?t=485
+ * 'Black' STM32F407VET6 board - http://wiki.stm32duino.com/index.php?title=STM32F407
  * Shield - https://github.com/jmz52/Hardware
  */
 
-#define ALLOW_STM32DUINO
-#include "env_validate.h"
-
-#if HOTENDS > 2 || E_STEPPERS > 2
+#if !defined(STM32F4) && !defined(STM32F4xx)
+  #error "Oops! Select an STM32F4 board in 'Tools > Board.'"
+#elif HOTENDS > 2 || E_STEPPERS > 2
   #error "Black STM32F4VET6 supports up to 2 hotends / E-steppers."
 #endif
 
@@ -42,7 +41,7 @@
 
 //#define I2C_EEPROM
 #define SRAM_EEPROM_EMULATION
-#define MARLIN_EEPROM_SIZE                0x2000  // 8KB
+#define MARLIN_EEPROM_SIZE 0x2000                 // 8KB
 
 //
 // Servos
@@ -133,10 +132,6 @@
 #define DOGLCD_CS                    LCD_PINS_D5
 #define DOGLCD_A0                    LCD_PINS_D6
 
-#if ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
-  #define BTN_ENC_EN                 LCD_PINS_D7  // Detect the presence of the encoder
-#endif
-
 //
 // Onboard SD support
 //
@@ -157,8 +152,8 @@
   #ifndef SDIO_SUPPORT
     #define SOFTWARE_SPI                          // Use soft SPI for onboard SD
     #define SDSS                     SDIO_D3_PIN
-    #define SD_SCK_PIN               SDIO_CK_PIN
-    #define SD_MISO_PIN              SDIO_D0_PIN
-    #define SD_MOSI_PIN             SDIO_CMD_PIN
+    #define SCK_PIN                  SDIO_CK_PIN
+    #define MISO_PIN                 SDIO_D0_PIN
+    #define MOSI_PIN                SDIO_CMD_PIN
   #endif
 #endif

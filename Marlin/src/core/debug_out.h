@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -26,7 +26,7 @@
 //  (or not) in a given .cpp file
 //
 
-#undef DEBUG_SECTION
+#undef DEBUG_PRINT_P
 #undef DEBUG_ECHO_START
 #undef DEBUG_ERROR_START
 #undef DEBUG_CHAR
@@ -36,10 +36,12 @@
 #undef DEBUG_ECHOLN
 #undef DEBUG_ECHOPGM
 #undef DEBUG_ECHOLNPGM
-#undef DEBUG_ECHOPGM_P
-#undef DEBUG_ECHOLNPGM_P
+#undef DEBUG_ECHOPAIR
+#undef DEBUG_ECHOPAIR_P
 #undef DEBUG_ECHOPAIR_F
 #undef DEBUG_ECHOPAIR_F_P
+#undef DEBUG_ECHOLNPAIR
+#undef DEBUG_ECHOLNPAIR_P
 #undef DEBUG_ECHOLNPAIR_F
 #undef DEBUG_ECHOLNPAIR_F_P
 #undef DEBUG_ECHO_MSG
@@ -49,13 +51,9 @@
 #undef DEBUG_POS
 #undef DEBUG_XYZ
 #undef DEBUG_DELAY
-#undef DEBUG_SYNCHRONIZE
 
 #if DEBUG_OUT
-
-  #include "debug_section.h"
-  #define DEBUG_SECTION(N,S,D)    SectionLog N(PSTR(S),D)
-
+  #define DEBUG_PRINT_P(P)        serialprintPGM(P)
   #define DEBUG_ECHO_START        SERIAL_ECHO_START
   #define DEBUG_ERROR_START       SERIAL_ERROR_START
   #define DEBUG_CHAR              SERIAL_CHAR
@@ -65,12 +63,12 @@
   #define DEBUG_ECHOLN            SERIAL_ECHOLN
   #define DEBUG_ECHOPGM           SERIAL_ECHOPGM
   #define DEBUG_ECHOLNPGM         SERIAL_ECHOLNPGM
-  #define DEBUG_ECHOPGM           SERIAL_ECHOPGM
-  #define DEBUG_ECHOPGM_P         SERIAL_ECHOPGM_P
+  #define DEBUG_ECHOPAIR          SERIAL_ECHOPAIR
+  #define DEBUG_ECHOPAIR_P        SERIAL_ECHOPAIR_P
   #define DEBUG_ECHOPAIR_F        SERIAL_ECHOPAIR_F
   #define DEBUG_ECHOPAIR_F_P      SERIAL_ECHOPAIR_F_P
-  #define DEBUG_ECHOLNPGM         SERIAL_ECHOLNPGM
-  #define DEBUG_ECHOLNPGM_P       SERIAL_ECHOLNPGM_P
+  #define DEBUG_ECHOLNPAIR        SERIAL_ECHOLNPAIR
+  #define DEBUG_ECHOLNPAIR_P      SERIAL_ECHOLNPAIR_P
   #define DEBUG_ECHOLNPAIR_F      SERIAL_ECHOLNPAIR_F
   #define DEBUG_ECHOLNPAIR_F_P    SERIAL_ECHOLNPAIR_F_P
   #define DEBUG_ECHO_MSG          SERIAL_ECHO_MSG
@@ -80,11 +78,8 @@
   #define DEBUG_POS               SERIAL_POS
   #define DEBUG_XYZ               SERIAL_XYZ
   #define DEBUG_DELAY(ms)         serial_delay(ms)
-  #define DEBUG_SYNCHRONIZE()     planner.synchronize()
-
 #else
-
-  #define DEBUG_SECTION(...)        NOOP
+  #define DEBUG_PRINT_P(P)          NOOP
   #define DEBUG_ECHO_START()        NOOP
   #define DEBUG_ERROR_START()       NOOP
   #define DEBUG_CHAR(...)           NOOP
@@ -94,10 +89,12 @@
   #define DEBUG_ECHOLN(...)         NOOP
   #define DEBUG_ECHOPGM(...)        NOOP
   #define DEBUG_ECHOLNPGM(...)      NOOP
-  #define DEBUG_ECHOPGM_P(...)      NOOP
-  #define DEBUG_ECHOLNPGM_P(...)    NOOP
+  #define DEBUG_ECHOPAIR(...)       NOOP
+  #define DEBUG_ECHOPAIR_P(...)     NOOP
   #define DEBUG_ECHOPAIR_F(...)     NOOP
   #define DEBUG_ECHOPAIR_F_P(...)   NOOP
+  #define DEBUG_ECHOLNPAIR(...)     NOOP
+  #define DEBUG_ECHOLNPAIR_P(...)   NOOP
   #define DEBUG_ECHOLNPAIR_F(...)   NOOP
   #define DEBUG_ECHOLNPAIR_F_P(...) NOOP
   #define DEBUG_ECHO_MSG(...)       NOOP
@@ -107,8 +104,6 @@
   #define DEBUG_POS(...)            NOOP
   #define DEBUG_XYZ(...)            NOOP
   #define DEBUG_DELAY(...)          NOOP
-  #define DEBUG_SYNCHRONIZE()       NOOP
-
 #endif
 
 #undef DEBUG_OUT

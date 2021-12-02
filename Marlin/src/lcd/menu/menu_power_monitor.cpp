@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -28,31 +28,31 @@
 
 #if HAS_LCD_MENU && HAS_POWER_MONITOR
 
-#include "menu_item.h"
+#include "menu.h"
 #include "../../feature/power_monitor.h"
 
 void menu_power_monitor() {
   START_MENU();
-  BACK_ITEM(MSG_MAIN);
+  MENU_BACK(MSG_MAIN);
 
   #if ENABLED(POWER_MONITOR_CURRENT)
   {
     bool ena = power_monitor.current_display_enabled();
-    EDIT_ITEM(bool, MSG_CURRENT, &ena, power_monitor.toggle_current_display);
+    MENU_ITEM_EDIT_CALLBACK(bool, MSG_CURRENT, &ena, power_monitor.toggle_current_display);
   }
   #endif
 
-  #if ENABLED(POWER_MONITOR_VOLTAGE)
+  #if HAS_POWER_MONITOR_VREF
   {
     bool ena = power_monitor.voltage_display_enabled();
-    EDIT_ITEM(bool, MSG_VOLTAGE, &ena, power_monitor.toggle_voltage_display);
+    MENU_ITEM_EDIT_CALLBACK(bool, MSG_VOLTAGE, &ena, power_monitor.toggle_voltage_display);
   }
   #endif
 
   #if HAS_POWER_MONITOR_WATTS
   {
     bool ena = power_monitor.power_display_enabled();
-    EDIT_ITEM(bool, MSG_POWER, &ena, power_monitor.toggle_power_display);
+    MENU_ITEM_EDIT_CALLBACK(bool, MSG_POWER, &ena, power_monitor.toggle_power_display);
   }
   #endif
 

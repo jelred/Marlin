@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #pragma once
@@ -25,10 +25,9 @@
  * HAL for stm32duino.com based on Libmaple and compatible (STM32F1)
  */
 
-#include "../../inc/MarlinConfig.h"
-#include "HAL.h"
-
+#include <stdint.h>
 #include <libmaple/timer.h>
+#include "../../core/boards.h"
 
 // ------------------------
 // Defines
@@ -38,6 +37,7 @@
  * TODO: Check and confirm what timer we will use for each Temps and stepper driving.
  * We should probable drive temps with PWM.
  */
+#define FORCE_INLINE __attribute__((always_inline)) inline
 
 typedef uint16_t hal_timer_t;
 #define HAL_TIMER_TYPE_MAX 0xFFFF
@@ -80,7 +80,7 @@ typedef uint16_t hal_timer_t;
   //#define TEMP_TIMER_NUM      4  // 2->4, Timer 2 for Stepper Current PWM
 #endif
 
-#if MB(BTT_SKR_MINI_E3_V1_0, BTT_SKR_E3_DIP, BTT_SKR_MINI_E3_V1_2, MKS_ROBIN_LITE, MKS_ROBIN_E3D, MKS_ROBIN_E3)
+#if MB(BTT_SKR_MINI_E3_V1_0, BTT_SKR_E3_DIP, BTT_SKR_MINI_E3_V1_2, MKS_ROBIN_LITE)
   // SKR Mini E3 boards use PA8 as FAN_PIN, so TIMER 1 is used for Fan PWM.
   #ifdef STM32_HIGH_DENSITY
     #define SERVO0_TIMER_NUM 8  // tone.cpp uses Timer 4
@@ -91,9 +91,8 @@ typedef uint16_t hal_timer_t;
   #define SERVO0_TIMER_NUM 1  // SERVO0 or BLTOUCH
 #endif
 
-#define STEP_TIMER_IRQ_PRIO 2
-#define TEMP_TIMER_IRQ_PRIO 3
-#define SERVO0_TIMER_IRQ_PRIO 1
+#define STEP_TIMER_IRQ_PRIO 1
+#define TEMP_TIMER_IRQ_PRIO 2
 
 #define TEMP_TIMER_PRESCALE     1000 // prescaler for setting Temp timer, 72Khz
 #define TEMP_TIMER_FREQUENCY    1000 // temperature interrupt frequency
@@ -129,10 +128,8 @@ timer_dev* get_timer_dev(int number);
   #define HAL_STEP_TIMER_ISR() extern "C" void stepTC_Handler()
 #endif
 
-extern "C" {
-  void tempTC_Handler();
-  void stepTC_Handler();
-}
+extern "C" void tempTC_Handler();
+extern "C" void stepTC_Handler();
 
 // ------------------------
 // Public Variables
@@ -166,7 +163,7 @@ FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const ha
   case STEP_TIMER_NUM:
     // NOTE: WE have set ARPE = 0, which means the Auto reload register is not preloaded
     // and there is no need to use any compare, as in the timer mode used, setting ARR to the compare value
-    // will result in exactly the same effect, ie triggering an interrupt, and on top, set counter to 0
+    // will result in exactly the same effect, ie trigerring an interrupt, and on top, set counter to 0
     timer_set_reload(STEP_TIMER_DEV, compare); // We reload direct ARR as needed during counting up
     break;
   case TEMP_TIMER_NUM:
@@ -195,7 +192,5 @@ FORCE_INLINE static void HAL_timer_isr_prologue(const uint8_t timer_num) {
 FORCE_INLINE static void timer_no_ARR_preload_ARPE(timer_dev *dev) {
   bb_peri_set_bit(&(dev->regs).gen->CR1, TIMER_CR1_ARPE_BIT, 0);
 }
-
-void timer_set_interrupt_priority(uint_fast8_t timer_num, uint_fast8_t priority);
 
 #define TIMER_OC_NO_PRELOAD 0 // Need to disable preload also on compare registers.

@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #ifdef __SAMD51__
@@ -23,9 +23,7 @@
 // --------------------------------------------------------------------------
 // Includes
 // --------------------------------------------------------------------------
-
 #include "../../inc/MarlinConfig.h"
-#include "ServoTimers.h" // for SERVO_TC
 
 // --------------------------------------------------------------------------
 // Local defines
@@ -41,7 +39,7 @@ const tTimerConfig TimerConfig[NUM_HARDWARE_TIMERS+1] = {
   { {.pTc=TC0},  TC0_IRQn, TC_PRIORITY(0) },  // 0 - stepper (assigned priority 2)
   { {.pTc=TC1},  TC1_IRQn, TC_PRIORITY(1) },  // 1 - stepper (needed by 32 bit timers)
   { {.pTc=TC2},  TC2_IRQn, 5              },  // 2 - tone (reserved by framework and fixed assigned priority 5)
-  { {.pTc=TC3},  TC3_IRQn, TC_PRIORITY(3) },  // 3 - servo (assigned priority 1)
+  { {.pTc=TC3},  TC3_IRQn, TC_PRIORITY(3) },  // 3 - servo (no interrupts used)
   { {.pTc=TC4},  TC4_IRQn, TC_PRIORITY(4) },  // 4 - software serial (no interrupts used)
   { {.pTc=TC5},  TC5_IRQn, TC_PRIORITY(5) },
   { {.pTc=TC6},  TC6_IRQn, TC_PRIORITY(6) },
@@ -107,7 +105,7 @@ void HAL_timer_start(const uint8_t timer_num, const uint32_t frequency) {
     tc->COUNT32.INTENCLR.reg = TC_INTENCLR_OVF; // disable overflow interrupt
 
     // TCn clock setup
-    const uint8_t clockID = GCLK_CLKCTRL_IDs[TCC_INST_NUM + timer_num];   // TC clock are preceded by TCC ones
+    const uint8_t clockID = GCLK_CLKCTRL_IDs[TCC_INST_NUM + timer_num];   // TC clock are preceeded by TCC ones
     GCLK->PCHCTRL[clockID].bit.CHEN = false;
     SYNC(GCLK->PCHCTRL[clockID].bit.CHEN);
     GCLK->PCHCTRL[clockID].reg = GCLK_PCHCTRL_GEN_GCLK0 | GCLK_PCHCTRL_CHEN;   // 120MHz startup code programmed
@@ -157,7 +155,7 @@ void HAL_timer_disable_interrupt(const uint8_t timer_num) {
 
 // missing from CMSIS: Check if interrupt is enabled or not
 static bool NVIC_GetEnabledIRQ(IRQn_Type IRQn) {
-  return TEST(NVIC->ISER[uint32_t(IRQn) >> 5], uint32_t(IRQn) & 0x1F);
+  return (NVIC->ISER[(uint32_t)(IRQn) >> 5] & (1 << ((uint32_t)(IRQn) & 0x1F))) != 0;
 }
 
 bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {

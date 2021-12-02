@@ -16,22 +16,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
 #include "../gcode.h"
-
 #include "../../module/temperature.h"
-#include "../../module/planner.h"       // for planner.finish_and_disable
-#include "../../module/printcounter.h"  // for print_job_timer.stop
-#include "../../lcd/marlinui.h"         // for LCD_MESSAGEPGM_P
+#include "../../module/stepper.h"
+#include "../../module/printcounter.h" // for print_job_timer
 
 #include "../../inc/MarlinConfig.h"
 
-#if ENABLED(PSU_CONTROL)
-  #include "../queue.h"
-  #include "../../feature/power.h"
+#if HAS_LCD_MENU
+  #include "../../lcd/ultralcd.h"
 #endif
 
 #if HAS_SUICIDE
@@ -39,6 +36,17 @@
 #endif
 
 #if ENABLED(PSU_CONTROL)
+
+  #if ENABLED(AUTO_POWER_CONTROL)
+    #include "../../feature/power.h"
+  #endif
+
+  // Could be moved to a feature, but this is all the data
+  bool powersupply_on;
+
+  #if HAS_TRINAMIC_CONFIG
+    #include "../../feature/tmc_util.h"
+  #endif
 
   /**
    * M80   : Turn on the Power Supply
@@ -48,11 +56,11 @@
 
     // S: Report the current power supply state and exit
     if (parser.seen('S')) {
-      SERIAL_ECHOPGM_P(powerManager.psu_on ? PSTR("PS:1\n") : PSTR("PS:0\n"));
+      serialprintPGM(powersupply_on ? PSTR("PS:1\n") : PSTR("PS:0\n"));
       return;
     }
 
-    powerManager.power_on();
+    PSU_ON();
 
     /**
      * If you have a switch on suicide pin, this is useful
@@ -60,7 +68,13 @@
      * a print without suicide...
      */
     #if HAS_SUICIDE
-      OUT_WRITE(SUICIDE_PIN, !SUICIDE_PIN_STATE);
+      OUT_WRITE(SUICIDE_PIN, !SUICIDE_PIN_INVERTING);
+    #endif
+
+    #if DISABLED(AUTO_POWER_CONTROL)
+      delay(PSU_POWERUP_DELAY);
+      restore_stepper_drivers();
+      TERN_(HAS_TRINAMIC_CONFIG, delay(PSU_POWERUP_DELAY));
     #endif
 
     TERN_(HAS_LCD_MENU, ui.reset_status());
@@ -75,9 +89,8 @@
  */
 void GcodeSuite::M81() {
   thermalManager.disable_all_heaters();
-  planner.finish_and_disable();
-
   print_job_timer.stop();
+  planner.finish_and_disable();
 
   #if HAS_FAN
     thermalManager.zero_fan_speeds();
@@ -92,8 +105,10 @@ void GcodeSuite::M81() {
   #if HAS_SUICIDE
     suicide();
   #elif ENABLED(PSU_CONTROL)
-    powerManager.power_off_soon();
+    PSU_OFF();
   #endif
 
-  LCD_MESSAGEPGM_P(PSTR(MACHINE_NAME " " STR_OFF "."));
+  #if HAS_LCD_MENU
+    LCD_MESSAGEPGM_P(PSTR(MACHINE_NAME " " STR_OFF "."));
+  #endif
 }

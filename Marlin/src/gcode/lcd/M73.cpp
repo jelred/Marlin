@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -25,12 +25,8 @@
 #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
 
 #include "../gcode.h"
-#include "../../lcd/marlinui.h"
+#include "../../lcd/ultralcd.h"
 #include "../../sd/cardreader.h"
-
-#if ENABLED(DWIN_CREALITY_LCD_ENHANCED)
-  #include "../../lcd/e3v2/enhanced/dwin.h"
-#endif
 
 /**
  * M73: Set percentage complete (for display on LCD)
@@ -39,23 +35,13 @@
  *   M73 P25 ; Set progress to 25%
  */
 void GcodeSuite::M73() {
-
-  #if ENABLED(DWIN_CREALITY_LCD_ENHANCED)
-
-    DWIN_Progress_Update();
-
-  #else
-
-    if (parser.seenval('P'))
-      ui.set_progress((PROGRESS_SCALE) > 1
-        ? parser.value_float() * (PROGRESS_SCALE)
-        : parser.value_byte()
-      );
-
-    #if ENABLED(USE_M73_REMAINING_TIME)
-      if (parser.seenval('R')) ui.set_remaining_time(60 * parser.value_ulong());
-    #endif
-
+  if (parser.seen('P'))
+    ui.set_progress((PROGRESS_SCALE) > 1
+      ? parser.value_float() * (PROGRESS_SCALE)
+      : parser.value_byte()
+    );
+  #if BOTH(LCD_SET_PROGRESS_MANUALLY, USE_M73_REMAINING_TIME)
+    if (parser.seen('R')) ui.set_remaining_time(60 * parser.value_ulong());
   #endif
 }
 

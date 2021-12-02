@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #pragma once
@@ -27,14 +27,14 @@
 
 #define BOARD_INFO_NAME "RigidBoard V2"
 
-#include "pins_RIGIDBOARD.h" // ... RAMPS
+#include "pins_RIGIDBOARD.h"
 
 //
 // Steppers
 //
 
 // I2C based DAC like on the Printrboard REVF
-#define HAS_MOTOR_CURRENT_DAC 1
+#define DAC_STEPPER_CURRENT
 
 // Channels available for DAC, For Rigidboard there are 4
 #define DAC_STEPPER_ORDER { 0, 1, 2, 3 }

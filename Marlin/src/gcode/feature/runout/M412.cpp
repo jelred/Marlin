@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -29,12 +29,6 @@
 
 /**
  * M412: Enable / Disable filament runout detection
- *
- * Parameters
- *  R         : Reset the runout sensor
- *  S<bool>   : Reset and enable/disable the runout sensor
- *  H<bool>   : Enable/disable host handling of filament runout
- *  D<linear> : Extra distance to continue after runout is triggered
  */
 void GcodeSuite::M412() {
   if (parser.seen("RS"
@@ -44,7 +38,7 @@ void GcodeSuite::M412() {
     #if ENABLED(HOST_ACTION_COMMANDS)
       if (parser.seen('H')) runout.host_handling = parser.value_bool();
     #endif
-    const bool seenR = parser.seen_test('R'), seenS = parser.seen('S');
+    const bool seenR = parser.seen('R'), seenS = parser.seen('S');
     if (seenR || seenS) runout.reset();
     if (seenS) runout.enabled = parser.value_bool();
     #if HAS_FILAMENT_RUNOUT_DISTANCE
@@ -54,28 +48,11 @@ void GcodeSuite::M412() {
   else {
     SERIAL_ECHO_START();
     SERIAL_ECHOPGM("Filament runout ");
-    serialprint_onoff(runout.enabled);
+    serialprintln_onoff(runout.enabled);
     #if HAS_FILAMENT_RUNOUT_DISTANCE
-      SERIAL_ECHOPGM(" ; Distance ", runout.runout_distance(), "mm");
+      SERIAL_ECHOLNPAIR("Filament runout distance (mm): ", runout.runout_distance());
     #endif
-    #if ENABLED(HOST_ACTION_COMMANDS)
-      SERIAL_ECHOPGM(" ; Host handling ");
-      serialprint_onoff(runout.host_handling);
-    #endif
-    SERIAL_EOL();
   }
-}
-
-void GcodeSuite::M412_report(const bool forReplay/*=true*/) {
-  report_heading_etc(forReplay, PSTR(STR_FILAMENT_RUNOUT_SENSOR));
-  SERIAL_ECHOPGM(
-    "  M412 S", runout.enabled
-    #if HAS_FILAMENT_RUNOUT_DISTANCE
-      , " D", LINEAR_UNIT(runout.runout_distance())
-    #endif
-    , " ; Sensor "
-  );
-  serialprintln_onoff(runout.enabled);
 }
 
 #endif // HAS_FILAMENT_SENSOR
