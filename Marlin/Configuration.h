@@ -96,7 +96,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_14_EFB
+  #define BOARD_BTT_OCTOPUS_V1_1
 #endif
 
 /**
@@ -107,7 +107,7 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT -1
+#define SERIAL_PORT 1
 
 /**
  * Serial Port Baud Rate
@@ -128,7 +128,7 @@
  * Currently Ethernet (-2) is only supported on Teensy 4.1 boards.
  * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT_2 3
+#define SERIAL_PORT_2 -1
 //#define BAUDRATE_2 115200   // Enable to override BAUDRATE
 
 /**
@@ -141,11 +141,6 @@
 
 // Enable the Bluetooth serial interface on AT90USB devices
 //#define BLUETOOTH
-
-// Choose the name from boards.h that matches your setup
-#ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_BTT_GTR_V1_0
-#endif
 
 // Name displayed in the LCD "Ready" message and Info menu
 //#define CUSTOM_MACHINE_NAME "3D Printer"
@@ -616,9 +611,9 @@
   //#define DEFAULT_Kd 440
 
   //The Beast
-	#define DEFAULT_Kp 24.64
-	#define DEFAULT_Ki 2.71
-	#define DEFAULT_Kd 55.94
+	#define DEFAULT_Kp 24.68
+	#define DEFAULT_Ki 2.37
+	#define DEFAULT_Kd 64.16
 
 #endif // PIDTEMP
 
@@ -655,9 +650,9 @@
   //#define MIN_BED_POWER 0
   //#define PID_BED_DEBUG // Sends debug data to the serial port.
   //Custom PIDTEMPBED settings from autotune on GTRv1.0
-  #define DEFAULT_bedKp 91.41
-  #define DEFAULT_bedKi 14.19
-  #define DEFAULT_bedKd 392.44
+  #define DEFAULT_bedKp 121.80
+  #define DEFAULT_bedKi 23.79
+  #define DEFAULT_bedKd 414.74
   //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
   //#define DEFAULT_bedKp 10.00
@@ -1879,6 +1874,12 @@
 // Preheat Constants - Up to 5 are supported without changes
 //
 #define PREHEAT_1_LABEL       "PLA"
+#define PREHEAT_1_TEMP_HOTEND 210
+#define PREHEAT_1_TEMP_BED     70
+#define PREHEAT_1_TEMP_CHAMBER 35
+#define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
+
+#define PREHEAT_1_LABEL       "PLA+"
 #define PREHEAT_1_TEMP_HOTEND 210
 #define PREHEAT_1_TEMP_BED     70
 #define PREHEAT_1_TEMP_CHAMBER 35
